@@ -1,0 +1,19 @@
+<nav class="navbar glass-card">
+    <div class="container flex justify-between items-center">
+        <div class="logo">
+            <span class="logo-text">Bairro <span class="highlight">Seguro</span></span>
+        </div>
+        <div class="nav-links flex gap-4">
+            <a routerLink="/" class="nav-link">Home</a>
+            <a *ngIf="!isLoggedIn" routerLink="/login" class="nav-link">Login</a>
+            <a *ngIf="!isLoggedIn" routerLink="/register" class="nav-link">Cadastrar</a>
+            <a *ngIf="isLoggedIn" routerLink="/report" class="nav-link">Relatar Incidente</a>
+            <a *ngIf="isLoggedIn" routerLink="/profile" class="nav-link">Meu Perfil</a>
+            <a *ngIf="isLoggedIn" (click)="logout()" class="nav-link cursor-pointer">Sair</a>
+        </div>
+    </div>
+</nav>
+
+<main class="container mt-8 animate-fade-in">
+    <router-outlet></router-outlet>
+</main>

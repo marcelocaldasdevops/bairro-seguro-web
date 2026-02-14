@@ -1,0 +1,32 @@
+/* Main App Component Styles */
+.navbar {
+    margin: 1rem;
+    padding: 1rem 0;
+    position: sticky;
+    top: 1rem;
+    z-index: 1000;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.highlight {
+    color: var(--primary);
+}
+
+.nav-link {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
