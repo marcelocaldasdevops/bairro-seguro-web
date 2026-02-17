@@ -7,28 +7,36 @@ import { ApiService } from '../../services/api.service';
   template: `
     <div class="auth-wrapper">
       <div class="glass-card auth-card animate-fade-in">
-        <h2>Criar Conta</h2>
-        <p class="subtitle">Comece a proteger seu bairro hoje</p>
+        <div class="auth-header">
+          <div class="auth-icon">🛡️</div>
+          <h2>Criar Conta</h2>
+          <p class="subtitle">Faça parte da rede de proteção do seu bairro</p>
+        </div>
         
-        <form (submit)="onSubmit()" class="mt-8">
+        <form (submit)="onSubmit()" class="auth-form mt-8">
           <div class="input-group">
             <label>Usuário</label>
-            <input type="text" [(ngModel)]="userData.username" name="username" required>
+            <input type="text" [(ngModel)]="userData.username" name="username" required placeholder="Ex: joaosilva">
           </div>
           <div class="input-group">
             <label>E-mail</label>
-            <input type="email" [(ngModel)]="userData.email" name="email" required>
+            <input type="email" [(ngModel)]="userData.email" name="email" required placeholder="seu@email.com">
           </div>
           <div class="input-group">
             <label>Senha</label>
-            <input type="password" [(ngModel)]="userData.password" name="password" required>
+            <input type="password" [(ngModel)]="userData.password" name="password" required placeholder="••••••••">
           </div>
-          <button type="submit" class="btn btn-primary w-full">Cadastrar</button>
+          <button type="submit" class="btn btn-primary w-full">
+            <span>Criar Minha Conta</span>
+            <span class="btn-icon">✨</span>
+          </button>
         </form>
         
-        <p class="footer-link mt-4">
-          Já tem uma conta? <a routerLink="/login">Entrar</a>
-        </p>
+        <div class="auth-footer mt-8">
+          <p class="footer-link">
+            Já tem uma conta? <a routerLink="/login">Fazer Login</a>
+          </p>
+        </div>
       </div>
     </div>
   `,
@@ -36,24 +44,55 @@ import { ApiService } from '../../services/api.service';
     .auth-wrapper {
       display: flex;
       justify-content: center;
-      align-items: center;
-      min-height: 70vh;
+      padding: 4rem 1.5rem;
     }
     .auth-card {
       width: 100%;
-      max-width: 400px;
-      padding: 2.5rem;
+      max-width: 440px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
     }
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.875rem;
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
     }
-    .w-full { width: 100%; }
-    .footer-link {
+    .auth-header {
       text-align: center;
-      font-size: 0.875rem;
+      margin-bottom: 2rem;
     }
-    .footer-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    .auth-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+    .auth-footer {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--glass-border);
+    }
+    .footer-link {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .footer-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 0.25rem;
+    }
   `]
 })
 export class RegisterComponent {

@@ -57,3 +57,7 @@ e2e/*.map
 
 # Ingnore kit antigravity 
 .agent
+
+#igmore testsprite
+testsprite_tests/*
+PRD.md

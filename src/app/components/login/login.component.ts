@@ -7,24 +7,36 @@ import { ApiService } from '../../services/api.service';
   template: `
     <div class="auth-wrapper">
       <div class="glass-card auth-card animate-fade-in">
-        <h2>Entrar</h2>
-        <p class="subtitle">Bem-vindo de volta ao Bairro Seguro</p>
+        <div class="auth-header">
+          <div class="auth-icon">🔐</div>
+          <h2>Bem-vindo</h2>
+          <p class="subtitle">Acesse sua conta para colaborar</p>
+        </div>
         
-        <form (submit)="onSubmit()" class="mt-8">
+        <form (submit)="onSubmit()" class="auth-form mt-8">
           <div class="input-group">
             <label>Usuário</label>
-            <input type="text" [(ngModel)]="credentials.username" name="username" required>
+            <div class="input-wrapper">
+              <input type="text" [(ngModel)]="credentials.username" name="username" required placeholder="Seu nome de usuário">
+            </div>
           </div>
           <div class="input-group">
             <label>Senha</label>
-            <input type="password" [(ngModel)]="credentials.password" name="password" required>
+            <div class="input-wrapper">
+              <input type="password" [(ngModel)]="credentials.password" name="password" required placeholder="••••••••">
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary w-full">Entrar</button>
+          <button type="submit" class="btn btn-primary w-full">
+            <span>Entrar</span>
+            <span class="btn-icon">→</span>
+          </button>
         </form>
         
-        <p class="footer-link mt-4">
-          Não tem uma conta? <a routerLink="/register">Cadastre-se</a>
-        </p>
+        <div class="auth-footer mt-8">
+          <p class="footer-link">
+            Novo por aqui? <a routerLink="/register">Criar uma conta</a>
+          </p>
+        </div>
       </div>
     </div>
   `,
@@ -32,24 +44,62 @@ import { ApiService } from '../../services/api.service';
     .auth-wrapper {
       display: flex;
       justify-content: center;
-      align-items: center;
-      min-height: 70vh;
+      padding: 4rem 1.5rem;
     }
     .auth-card {
       width: 100%;
-      max-width: 400px;
-      padding: 2.5rem;
+      max-width: 440px;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
     }
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.875rem;
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
     }
-    .w-full { width: 100%; }
-    .footer-link {
+    .auth-header {
       text-align: center;
-      font-size: 0.875rem;
+      margin-bottom: 2rem;
     }
-    .footer-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+    .auth-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .btn-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    .btn:hover .btn-icon {
+      transform: translateX(4px);
+    }
+    .auth-footer {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--glass-border);
+    }
+    .footer-link {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .footer-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      margin-left: 0.25rem;
+    }
+    .footer-link a:hover {
+      text-decoration: underline;
+    }
   `]
 })
 export class LoginComponent {

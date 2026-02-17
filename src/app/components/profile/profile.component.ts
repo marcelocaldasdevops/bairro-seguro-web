@@ -6,30 +6,44 @@ import { ApiService } from '../../services/api.service';
   template: `
     <div class="profile-wrapper">
       <div class="glass-card profile-card animate-fade-in">
-        <h2>Meu Perfil</h2>
-        <p class="subtitle">Complete seu perfil para reportar incidentes</p>
+        <header class="profile-header">
+           <div class="avatar-large">{{ user.name ? user.name[0] : 'U' }}</div>
+           <h2>Meu Perfil</h2>
+           <p class="subtitle">Gerencie suas informações de segurança</p>
+        </header>
         
-        <div *ngIf="isProfileComplete" class="success-alert mt-4">
-          ✅ Seu perfil está completo! Você pode relatar incidentes.
-        </div>
-        <div *ngIf="!isProfileComplete" class="warning-alert mt-4">
-          ⚠️ Você precisa completar seu perfil para relatar incidentes.
+        <div class="status-section mt-6">
+          <div *ngIf="isProfileComplete" class="status-badge success">
+            <span class="icon">✅</span>
+            <span>Perfil Verificado e Completo</span>
+          </div>
+          <div *ngIf="!isProfileComplete" class="status-badge warning">
+            <span class="icon">⚠️</span>
+            <span>Ação Necessária: Complete seu perfil</span>
+          </div>
         </div>
 
-        <form (submit)="onSubmit()" class="mt-8">
-          <div class="input-group">
-            <label>Nome Completo</label>
-            <input type="text" [(ngModel)]="user.name" name="name" required>
+        <form (submit)="onSubmit()" class="profile-form mt-8">
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Nome Completo</label>
+              <input type="text" [(ngModel)]="user.name" name="name" required placeholder="Seu nome completo">
+            </div>
+            <div class="input-group">
+              <label>CPF</label>
+              <input type="text" [(ngModel)]="user.cpf" name="cpf" required placeholder="000.000.000-00">
+            </div>
+            <div class="input-group">
+              <label>Bairro de Residência</label>
+              <input type="text" [(ngModel)]="user.bairro" name="bairro" required placeholder="Ex: Centro">
+            </div>
           </div>
-          <div class="input-group">
-            <label>CPF</label>
-            <input type="text" [(ngModel)]="user.cpf" name="cpf" required placeholder="000.000.000-00">
+          
+          <div class="form-actions mt-8">
+            <button type="submit" class="btn btn-primary w-full">
+              <span>Salvar Alterações</span>
+            </button>
           </div>
-          <div class="input-group">
-            <label>Bairro</label>
-            <input type="text" [(ngModel)]="user.bairro" name="bairro" required>
-          </div>
-          <button type="submit" class="btn btn-primary w-full">Salvar Alterações</button>
         </form>
       </div>
     </div>
@@ -38,33 +52,59 @@ import { ApiService } from '../../services/api.service';
     .profile-wrapper {
       display: flex;
       justify-content: center;
-      padding: 2rem 0;
+      padding: 3rem 1.5rem 6rem;
     }
     .profile-card {
       width: 100%;
-      max-width: 500px;
-      padding: 2.5rem;
+      max-width: 560px;
+      padding: 3rem;
     }
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.875rem;
+    .profile-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
     }
-    .w-full { width: 100%; }
-    .success-alert {
-      padding: 1rem;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid var(--success);
-      border-radius: 0.5rem;
+    .avatar-large {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-width: 1px;
+      border-style: solid;
+    }
+    .status-badge.success {
+      background: rgba(46, 204, 113, 0.1);
+      border-color: rgba(46, 204, 113, 0.2);
       color: var(--success);
-      font-size: 0.875rem;
     }
-    .warning-alert {
-      padding: 1rem;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid var(--warning);
-      border-radius: 0.5rem;
+    .status-badge.warning {
+      background: rgba(255, 184, 77, 0.1);
+      border-color: rgba(255, 184, 77, 0.2);
       color: var(--warning);
-      font-size: 0.875rem;
+    }
+    .profile-form {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-grid {
+      display: grid;
+      gap: 0.5rem;
     }
   `]
 })

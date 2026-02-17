@@ -1,30 +1,67 @@
-/* Main App Component Styles */
 .navbar {
-    margin: 1rem;
-    padding: 1rem 0;
+    margin: 1.5rem auto;
+    padding: 0.75rem 0;
     position: sticky;
     top: 1rem;
     z-index: 1000;
+    max-width: 1200px;
+    width: calc(100% - 3rem);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .logo-text {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #fff 40%, var(--primary) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .highlight {
     color: var(--primary);
+    position: relative;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
 }
 
 .nav-link {
-    color: var(--text-main);
+    color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s ease;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-    color: var(--primary);
+    color: #fff;
+}
+
+.nav-link:hover::after {
+    width: 100%;
 }
 
 .cursor-pointer {
