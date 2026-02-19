@@ -4,13 +4,11 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://35.193.57.27/api/:splat"
+  to = "http://35.193.57.27/api/:splat"
   status = 200
   force = true
   
-  # Headers para permitir requisições cross-origin
-  [redirects.headers]
-    X-Forwarded-Proto = "https"
+  headers = {X-Forwarded-Proto = "https"}
 
 [[redirects]]
   from = "/*"
