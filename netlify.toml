@@ -8,7 +8,7 @@
   status = 200
   force = true
   
-  headers = {X-Forwarded-Proto = "https"}
+  #headers = {X-Forwarded-Proto = "https"}
 
 [[redirects]]
   from = "/*"
