@@ -7,8 +7,6 @@
   to = "http://35.193.57.27/api/:splat"
   status = 200
   force = true
-  
-  #headers = {X-Forwarded-Proto = "https"}
 
 [[redirects]]
   from = "/*"
