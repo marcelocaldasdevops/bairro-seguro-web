@@ -8,7 +8,7 @@ import { ApiService } from '../../services/api.service';
     <div class="auth-wrapper">
       <div class="glass-card auth-card animate-fade-in">
         <div class="auth-header">
-          <div class="auth-icon">🔐</div>
+          <img src="assets/logo.png" alt="Logo" class="auth-logo">
           <h2>Bem-vindo</h2>
           <p class="subtitle">Acesse sua conta para colaborar</p>
         </div>
@@ -66,9 +66,16 @@ import { ApiService } from '../../services/api.service';
       text-align: center;
       margin-bottom: 2rem;
     }
-    .auth-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
+    .auth-logo {
+      width: 140px;
+      height: 140px;
+      margin-bottom: 1.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      background: white;
+      padding: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      border: 2px solid rgba(255,255,255,0.2);
     }
     .auth-form {
       display: flex;

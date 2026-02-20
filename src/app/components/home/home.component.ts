@@ -7,9 +7,12 @@ import * as L from 'leaflet';
   template: `
     <div class="home-container">
       <header class="flex justify-between items-center mb-10">
-        <div>
-          <h1 class="main-title">Bairro Seguro</h1>
-          <p class="subtitle">Monitoramento colaborativo e inteligente em tempo real</p>
+        <div class="flex items-center gap-6">
+          <img src="assets/logo.png" alt="Logo" class="header-logo">
+          <div>
+            <h1 class="main-title">Bairro Seguro</h1>
+            <p class="subtitle">Monitoramento colaborativo e inteligente em tempo real</p>
+          </div>
         </div>
         <button *ngIf="isLoggedIn" routerLink="/report" class="btn btn-primary">
           <span>Relatar Novo</span>
@@ -61,6 +64,13 @@ import * as L from 'leaflet';
   styles: [`
     .home-container { padding-bottom: 6rem; }
     .main-title { font-size: 2.5rem; }
+    .header-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
     
     .map-wrapper { overflow: hidden; }
 
