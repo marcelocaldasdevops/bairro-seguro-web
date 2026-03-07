@@ -1,0 +1,57 @@
+<div class="home-container">
+    <header class="flex justify-between items-center mb-10">
+        <div class="flex items-center gap-6">
+            <img src="assets/logo.png" alt="Logo" class="header-logo">
+            <div>
+                <h1 class="main-title">Bairro Seguro</h1>
+                <p class="subtitle">Monitoramento colaborativo e inteligente em tempo real</p>
+            </div>
+        </div>
+        <button *ngIf="isLoggedIn" routerLink="/report" class="btn btn-primary">
+            <span>Relatar Novo</span>
+        </button>
+    </header>
+
+    <div class="glass-card map-wrapper mb-12">
+        <div id="main-map" class="map-container" style="height: 550px;"></div>
+    </div>
+
+    <div class="section-header mb-6">
+        <h2>Ocorrências Recentes</h2>
+        <div class="header-line"></div>
+    </div>
+
+    <div class="incidents-grid" *ngIf="incidents.length > 0; else noIncidents">
+        <div *ngFor="let incident of incidents" class="glass-card incident-card" (click)="focusOnIncident(incident)">
+            <div class="card-header">
+                <div class="severity-indicator" [ngClass]="'severity-' + incident.severity_level.toLowerCase()"></div>
+                <span class="severity-label">{{ incident.severity_level }}</span>
+            </div>
+            <h3 class="description">{{ incident.description | slice:0:120 }}{{ incident.description.length > 120 ? '...'
+                : '' }}</h3>
+
+            <div class="card-footer">
+                <div class="meta-item">
+                    <span class="icon">📅</span>
+                    <span>{{ incident.datetime | date:'short' }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="icon">📍</span>
+                    <span>{{ incident.location.latitude | number:'1.3-3' }}, {{ incident.location.longitude |
+                        number:'1.3-3' }}</span>
+                </div>
+                <div class="user-info">
+                    <div class="avatar">{{ incident.user[0] | uppercase }}</div>
+                    <span>{{ incident.user }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ng-template #noIncidents>
+        <div class="glass-card empty-state">
+            <div class="empty-icon">🛡️</div>
+            <p>Nenhum incidente relatado recentemente. A comunidade está segura!</p>
+        </div>
+    </ng-template>
+</div>
