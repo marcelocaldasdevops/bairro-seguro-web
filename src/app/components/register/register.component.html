@@ -1,0 +1,34 @@
+<div class="auth-wrapper">
+    <div class="glass-card auth-card animate-fade-in">
+        <div class="auth-header">
+            <div class="auth-icon">🛡️</div>
+            <h2>Criar Conta</h2>
+            <p class="subtitle">Faça parte da rede de proteção do seu bairro</p>
+        </div>
+
+        <form (submit)="onSubmit()" class="auth-form mt-8">
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" [(ngModel)]="userData.username" name="username" required placeholder="Ex: joaosilva">
+            </div>
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" [(ngModel)]="userData.email" name="email" required placeholder="seu@email.com">
+            </div>
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" [(ngModel)]="userData.password" name="password" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary w-full">
+                <span>Criar Minha Conta</span>
+                <span class="btn-icon">✨</span>
+            </button>
+        </form>
+
+        <div class="auth-footer mt-8">
+            <p class="footer-link">
+                Já tem uma conta? <a routerLink="/login">Fazer Login</a>
+            </p>
+        </div>
+    </div>
+</div>

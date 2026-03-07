@@ -1,0 +1,43 @@
+<div class="profile-wrapper">
+    <div class="glass-card profile-card animate-fade-in">
+        <header class="profile-header">
+            <div class="avatar-large">{{ user.name ? user.name[0] : 'U' }}</div>
+            <h2>Meu Perfil</h2>
+            <p class="subtitle">Gerencie suas informações de segurança</p>
+        </header>
+
+        <div class="status-section mt-6">
+            <div *ngIf="isProfileComplete" class="status-badge success">
+                <span class="icon">✅</span>
+                <span>Perfil Verificado e Completo</span>
+            </div>
+            <div *ngIf="!isProfileComplete" class="status-badge warning">
+                <span class="icon">⚠️</span>
+                <span>Ação Necessária: Complete seu perfil</span>
+            </div>
+        </div>
+
+        <form (submit)="onSubmit()" class="profile-form mt-8">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Nome Completo</label>
+                    <input type="text" [(ngModel)]="user.name" name="name" required placeholder="Seu nome completo">
+                </div>
+                <div class="input-group">
+                    <label>CPF</label>
+                    <input type="text" [(ngModel)]="user.cpf" name="cpf" required placeholder="000.000.000-00">
+                </div>
+                <div class="input-group">
+                    <label>Bairro de Residência</label>
+                    <input type="text" [(ngModel)]="user.bairro" name="bairro" required placeholder="Ex: Centro">
+                </div>
+            </div>
+
+            <div class="form-actions mt-8">
+                <button type="submit" class="btn btn-primary w-full">
+                    <span>Salvar Alterações</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
