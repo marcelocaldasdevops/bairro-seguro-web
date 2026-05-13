@@ -9,17 +9,40 @@
         <form (submit)="onSubmit()" class="auth-form mt-8">
             <div class="input-group">
                 <label>Usuário</label>
-                <input type="text" [(ngModel)]="userData.username" name="username" required placeholder="Ex: joaosilva">
+                <div class="input-container">
+                    <span class="input-icon">👤</span>
+                    <input type="text" [(ngModel)]="userData.username" name="username" required placeholder="Ex: joaosilva">
+                </div>
             </div>
             <div class="input-group">
                 <label>E-mail</label>
-                <input type="email" [(ngModel)]="userData.email" name="email" required placeholder="seu@email.com">
+                <div class="input-container">
+                    <span class="input-icon">✉️</span>
+                    <input type="email" [(ngModel)]="userData.email" name="email" required placeholder="seu@email.com">
+                </div>
             </div>
             <div class="input-group">
                 <label>Senha</label>
-                <input type="password" [(ngModel)]="userData.password" name="password" required placeholder="••••••••">
+                <div class="input-container">
+                    <span class="input-icon">🔒</span>
+                    <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="userData.password" name="password" required placeholder="••••••••">
+                    <button type="button" class="eye-btn" (click)="togglePassword()">
+                        {{ showPassword ? '👁️' : '🙈' }}
+                    </button>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary w-full">
+            <div class="input-group">
+                <label>Confirmar Senha</label>
+                <div class="input-container">
+                    <span class="input-icon">🔄</span>
+                    <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="userData.confirmPassword" name="confirmPassword" required placeholder="••••••••">
+                    <button type="button" class="eye-btn" (click)="toggleConfirmPassword()">
+                        {{ showConfirmPassword ? '👁️' : '🙈' }}
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-4" 
+                [disabled]="!userData.confirmPassword || userData.password !== userData.confirmPassword">
                 <span>Criar Minha Conta</span>
                 <span class="btn-icon">✨</span>
             </button>

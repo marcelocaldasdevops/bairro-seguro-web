@@ -9,18 +9,23 @@
         <form (submit)="onSubmit()" class="auth-form mt-8">
             <div class="input-group">
                 <label>E-mail</label>
-                <div class="input-wrapper">
+                <div class="input-container">
+                    <span class="input-icon">✉️</span>
                     <input type="email" [(ngModel)]="credentials.email" name="email" required placeholder="Seu e-mail">
                 </div>
             </div>
             <div class="input-group">
                 <label>Senha</label>
-                <div class="input-wrapper">
-                    <input type="password" [(ngModel)]="credentials.password" name="password" required
+                <div class="input-container">
+                    <span class="input-icon">🔒</span>
+                    <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="credentials.password" name="password" required
                         placeholder="••••••••">
+                    <button type="button" class="eye-btn" (click)="togglePassword()">
+                        {{ showPassword ? '👁️' : '🙈' }}
+                    </button>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-full">
+            <button type="submit" class="btn btn-primary w-full mt-4">
                 <span>Entrar</span>
                 <span class="btn-icon">→</span>
             </button>

@@ -9,8 +9,13 @@ import { ApiService } from '../../services/api.service';
 })
 export class LoginComponent {
   credentials = { email: '', password: '' };
+  showPassword = false;
 
   constructor(private api: ApiService, private router: Router) {}
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit() {
     this.api.login(this.credentials).subscribe({

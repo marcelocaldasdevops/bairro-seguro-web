@@ -1,75 +1,82 @@
 .auth-wrapper {
     display: flex;
     justify-content: center;
-    padding: 4rem 1.5rem;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
 }
 
 .auth-card {
     width: 100%;
     max-width: 440px;
-    padding: 3rem 2.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.auth-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    padding: 3rem;
 }
 
 .auth-header {
     text-align: center;
-    margin-bottom: 2rem;
 }
 
-.auth-logo {
-    width: 140px;
-    height: 140px;
-    margin-bottom: 1.5rem;
-    border-radius: 50%;
-    object-fit: cover;
-    background: white;
-    padding: 10px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.auth-form {
+.auth-logo, .auth-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    border-radius: 16px;
 }
 
-.btn-icon {
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-.btn:hover .btn-icon {
-    transform: translateX(4px);
+.input-icon {
+    position: absolute;
+    left: 1.25rem;
+    font-size: 1.1rem;
+    opacity: 0.6;
+}
+
+.input-container input {
+    padding-left: 3.25rem;
+    padding-right: 3.25rem;
+}
+
+.eye-btn {
+    position: absolute;
+    right: 1.25rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.eye-btn:hover {
+    opacity: 1;
 }
 
 .auth-footer {
     text-align: center;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--glass-border);
 }
 
 .footer-link {
-    font-size: 0.9rem;
     color: var(--text-muted);
+    font-size: 0.95rem;
 }
 
 .footer-link a {
     color: var(--primary);
     text-decoration: none;
-    font-weight: 700;
-    margin-left: 0.25rem;
+    font-weight: 600;
 }
 
 .footer-link a:hover {
