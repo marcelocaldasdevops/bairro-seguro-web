@@ -10,6 +10,7 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ReportIncidentComponent } from './components/report-incident/report-incident.component';
+import { IncidentDetailsComponent } from './components/incident-details/incident-details.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { ReportIncidentComponent } from './components/report-incident/report-inc
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
-    ReportIncidentComponent
+    ReportIncidentComponent,
+    IncidentDetailsComponent
   ],
   imports: [
     BrowserModule,

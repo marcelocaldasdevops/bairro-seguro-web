@@ -11,10 +11,17 @@ import * as L from 'leaflet';
 export class ReportIncidentComponent implements AfterViewInit {
   private map: any;
   private marker: any;
+  
+  currentStep = 1;
+  isProfileComplete = false;
+  selectedFile: File | null = null;
 
   incident = {
+    title: '',
     description: '',
+    category: 'Assalto',
     severity_level: 'LOW',
+    is_emergency: false,
     location: {
       latitude: -23.550520,
       longitude: -46.633308
@@ -23,22 +30,43 @@ export class ReportIncidentComponent implements AfterViewInit {
 
   constructor(private api: ApiService, private router: Router) {}
 
-  ngAfterViewInit() {
-    this.initMap();
+  ngOnInit() {
+    this.checkProfile();
   }
 
-  private initMap(): void {
-    // Try to get user's position
-    navigator.geolocation.getCurrentPosition((pos) => {
-      this.incident.location.latitude = pos.coords.latitude;
-      this.incident.location.longitude = pos.coords.longitude;
-      this.setupMap();
-    }, () => {
-      this.setupMap();
+  checkProfile() {
+    this.api.getMe().subscribe({
+      next: (user) => {
+        this.isProfileComplete = !!(user.name?.trim() && user.cpf?.trim() && user.bairro?.trim());
+        if (!this.isProfileComplete) {
+          alert('Você precisa completar seu perfil antes de relatar um incidente.');
+          this.router.navigate(['/profile']);
+        }
+      },
+      error: () => this.router.navigate(['/login'])
     });
   }
 
-  private setupMap(): void {
+  ngAfterViewInit() {
+    // Map will be initialized in Step 2
+  }
+
+  nextStep() {
+    if (this.currentStep === 1) {
+      this.currentStep = 2;
+      setTimeout(() => this.initMap(), 100);
+    } else if (this.currentStep === 2) {
+      this.currentStep = 3;
+    }
+  }
+
+  prevStep() {
+    this.currentStep--;
+  }
+
+  private initMap(): void {
+    if (this.map) return;
+    
     this.map = L.map('map').setView(
       [this.incident.location.latitude, this.incident.location.longitude],
       15
@@ -49,7 +77,15 @@ export class ReportIncidentComponent implements AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    this.marker = L.marker([this.incident.location.latitude, this.incident.location.longitude]).addTo(this.map);
+    this.marker = L.marker([this.incident.location.latitude, this.incident.location.longitude], {
+      draggable: true
+    }).addTo(this.map);
+
+    this.marker.on('dragend', () => {
+      const pos = this.marker.getLatLng();
+      this.incident.location.latitude = parseFloat(pos.lat.toFixed(6));
+      this.incident.location.longitude = parseFloat(pos.lng.toFixed(6));
+    });
 
     this.map.on('click', (e: any) => {
       const { lat, lng } = e.latlng;
@@ -59,18 +95,32 @@ export class ReportIncidentComponent implements AfterViewInit {
     });
   }
 
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
   onSubmit() {
-    this.api.createIncident(this.incident).subscribe({
+    const formData = new FormData();
+    formData.append('title', this.incident.title);
+    formData.append('description', this.incident.description);
+    formData.append('category', this.incident.category);
+    formData.append('severity_level', this.incident.severity_level);
+    formData.append('is_emergency', String(this.incident.is_emergency));
+    formData.append('latitude', String(this.incident.location.latitude));
+    formData.append('longitude', String(this.incident.location.longitude));
+    
+    if (this.selectedFile) {
+      formData.append('media', this.selectedFile);
+    }
+
+    this.api.createIncident(formData).subscribe({
       next: () => {
-        alert('Incidente relatado com sucesso!');
+        alert('Incidente relatado com sucesso! A comunidade agradece.');
         this.router.navigate(['/']);
       },
       error: (err) => {
-        const error = err.error?.non_field_errors?.[0] || 'Erro ao relatar incidente';
-        alert(error);
-        if (error.includes('perfil deve estar completo')) {
-          this.router.navigate(['/profile']);
-        }
+        console.error(err);
+        alert('Erro ao enviar relato. Tente novamente.');
       }
     });
   }

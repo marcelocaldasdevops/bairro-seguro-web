@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -20,12 +20,33 @@ export class ApiService {
     return headers;
   }
 
-  getIncidents(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/incidents/`);
+  getIncidents(filters?: any): Observable<any> {
+    let params = new HttpParams();
+    if (filters) {
+      Object.keys(filters).forEach(key => {
+        if (filters[key] !== null && filters[key] !== undefined && filters[key] !== '') {
+          params = params.set(key, filters[key]);
+        }
+      });
+    }
+    return this.http.get(`${this.apiUrl}/incidents/`, { params });
   }
 
-  createIncident(incident: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/incidents/`, incident, { headers: this.getHeaders() });
+  createIncident(incidentData: FormData | any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/incidents/`, incidentData, { headers: this.getHeaders() });
+  }
+
+  // Social Features
+  addComment(incidentId: number, content: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/incidents/${incidentId}/comments/`, { content }, { headers: this.getHeaders() });
+  }
+
+  getComments(incidentId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/incidents/${incidentId}/comments/`);
+  }
+
+  confirmIncident(incidentId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/incidents/${incidentId}/confirm/`, {}, { headers: this.getHeaders() });
   }
 
   login(credentials: any): Observable<any> {
