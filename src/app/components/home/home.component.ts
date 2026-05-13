@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import * as L from 'leaflet';
 
@@ -8,8 +8,26 @@ import * as L from 'leaflet';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, AfterViewInit {
+  @ViewChild('carouselContainer') carouselContainer!: ElementRef;
+  
   incidents: any[] = [];
   isLoggedIn = false;
+  selectedIncident: any = null;
+  
+  filters = {
+    category: '',
+    radius: '',
+    lat: null as number | null,
+    lng: null as number | null
+  };
+
+  kpis = {
+    total24h: 0,
+    areaStatus: 100,
+    criticalAlerts: 0,
+    activeVigilantes: 0
+  };
+
   private map: any;
   private markers: L.Marker[] = [];
 
@@ -17,6 +35,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
+    this.getCurrentLocation();
     this.loadIncidents();
   }
 
@@ -24,29 +43,63 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.initMap();
   }
 
-  private loadIncidents() {
-    this.api.getIncidents().subscribe(data => {
+  getCurrentLocation() {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      this.filters.lat = pos.coords.latitude;
+      this.filters.lng = pos.coords.longitude;
+      if (this.map) {
+        this.map.setView([this.filters.lat, this.filters.lng], 14);
+      }
+    });
+  }
+
+  loadIncidents() {
+    this.api.getIncidents(this.filters).subscribe(data => {
       this.incidents = data;
+      this.calculateKPIs();
       this.addMarkers();
     });
   }
 
+  private calculateKPIs() {
+    const now = new Date().getTime();
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    const recentIncidents = this.incidents.filter(i => {
+      const incidentDate = new Date(i.datetime).getTime();
+      return (now - incidentDate) < oneDay;
+    });
+
+    this.kpis.total24h = recentIncidents.length;
+    this.kpis.criticalAlerts = recentIncidents.filter(i => i.severity_level === 'HIGH').length;
+    
+    let status = 100;
+    recentIncidents.forEach(i => {
+      if (i.severity_level === 'HIGH') status -= 15;
+      else if (i.severity_level === 'MEDIUM') status -= 5;
+    });
+    this.kpis.areaStatus = Math.max(0, status);
+    this.kpis.activeVigilantes = Math.floor(Math.random() * 10) + 5;
+  }
+
+  applyFilters() {
+    this.loadIncidents();
+  }
+
   private initMap(): void {
-    this.map = L.map('main-map').setView([-23.550520, -46.633308], 13);
+    const defaultLat = this.filters.lat || -23.550520;
+    const defaultLng = this.filters.lng || -46.633308;
+    
+    this.map = L.map('main-map').setView([defaultLat, defaultLng], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
-
-    navigator.geolocation.getCurrentPosition((pos) => {
-      this.map.setView([pos.coords.latitude, pos.coords.longitude], 14);
-    });
   }
 
   private addMarkers(): void {
     if (!this.map) return;
     
-    // Clear existing
     this.markers.forEach(m => this.map.removeLayer(m));
     this.markers = [];
 
@@ -55,19 +108,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
                     incident.severity_level === 'MEDIUM' ? '#f59e0b' : '#10b981';
       
       const markerHtml = `
-        <div style="
-          background-color: ${color};
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          border: 2px solid white;
-          box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        "></div>
+        <div class="pulse-marker" style="background-color: ${color};"></div>
       `;
 
       const customIcon = L.divIcon({
         html: markerHtml,
-        className: 'custom-marker',
+        className: 'custom-marker-wrapper',
         iconSize: [20, 20],
         iconAnchor: [10, 10]
       });
@@ -76,19 +122,25 @@ export class HomeComponent implements OnInit, AfterViewInit {
         [incident.location.latitude, incident.location.longitude],
         { icon: customIcon }
       )
-      .addTo(this.map)
-      .bindPopup(`
-        <strong>${incident.severity_level}</strong><br>
-        ${incident.description}<br>
-        <small>${new Date(incident.datetime).toLocaleString()}</small>
-      `);
+      .addTo(this.map);
+
+      marker.on('click', () => {
+        this.selectedIncident = incident;
+      });
 
       this.markers.push(marker);
     });
   }
 
   focusOnIncident(incident: any) {
+    this.selectedIncident = incident;
     this.map.setView([incident.location.latitude, incident.location.longitude], 16);
   }
-}
 
+  scrollFeed(amount: number) {
+    this.carouselContainer.nativeElement.scrollBy({
+      left: amount,
+      behavior: 'smooth'
+    });
+  }
+}

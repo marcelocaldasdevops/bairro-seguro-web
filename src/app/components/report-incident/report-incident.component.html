@@ -1,55 +1,120 @@
 <div class="report-wrapper">
     <div class="glass-card report-card animate-fade-in">
         <header class="report-header">
+            <div class="wizard-progress mb-6">
+                <div class="step" [class.active]="currentStep >= 1">1<span>Tipo</span></div>
+                <div class="connector" [class.active]="currentStep >= 2"></div>
+                <div class="step" [class.active]="currentStep >= 2">2<span>Local</span></div>
+                <div class="connector" [class.active]="currentStep >= 3"></div>
+                <div class="step" [class.active]="currentStep >= 3">3<span>Detalhes</span></div>
+            </div>
             <div class="header-content">
                 <h2>🚨 Relatar Incidente</h2>
-                <p class="subtitle">Sua contribuição ajuda a manter a comunidade segura</p>
+                <p class="subtitle" *ngIf="currentStep === 1">O que está acontecendo?</p>
+                <p class="subtitle" *ngIf="currentStep === 2">Onde isso ocorreu?</p>
+                <p class="subtitle" *ngIf="currentStep === 3">Fale mais sobre o ocorrido</p>
             </div>
         </header>
 
         <div class="report-body mt-8">
-            <div class="instruction-card mb-6">
-                <span class="icon">📍</span>
-                <p>Selecione no mapa o local exato da ocorrência</p>
-            </div>
-
-            <div class="map-container-outer mb-8">
-                <div id="map" class="map-container shadow-inner"></div>
-                <div class="coords-overlay" *ngIf="incident.location.latitude">
-                    <span>LAT: {{ incident.location.latitude | number:'1.4-4' }}</span>
-                    <span class="divider">|</span>
-                    <span>LNG: {{ incident.location.longitude | number:'1.4-4' }}</span>
-                </div>
-            </div>
-
-            <form (submit)="onSubmit()" class="incident-form">
+            <!-- Step 1: Type -->
+            <div *ngIf="currentStep === 1" class="wizard-step">
                 <div class="input-group">
-                    <label>Descrição do Ocorrido</label>
-                    <textarea [(ngModel)]="incident.description" name="description" rows="4" required
-                        placeholder="Descreva detalhes importantes como horário, características e o que foi observado..."></textarea>
+                    <label>Categoria do Incidente</label>
+                    <select [(ngModel)]="incident.category" name="category">
+                        <option value="Assalto">Assalto</option>
+                        <option value="Acidente">Acidente</option>
+                        <option value="Suspeito">Suspeito</option>
+                        <option value="Infraestrutura">Infraestrutura</option>
+                        <option value="Outro">Outro</option>
+                    </select>
                 </div>
 
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Nível de Gravidade</label>
-                        <div class="select-wrapper">
-                            <select [(ngModel)]="incident.severity_level" name="severity_level" required>
-                                <option value="LOW">🟢 Baixo (Informativo / Alerta)</option>
-                                <option value="MEDIUM">🟡 Médio (Risco Potencial)</option>
-                                <option value="HIGH">🔴 Alto (Ocorrência Grave / Perigo)</option>
-                            </select>
-                        </div>
+                <div class="input-group">
+                    <label>Nível de Gravidade</label>
+                    <select [(ngModel)]="incident.severity_level" name="severity_level">
+                        <option value="LOW">🟢 Baixo (Informativo)</option>
+                        <option value="MEDIUM">🟡 Médio (Risco)</option>
+                        <option value="HIGH">🔴 Alto (Perigo)</option>
+                    </select>
+                </div>
+
+                <div class="emergency-toggle glass-card" [class.active]="incident.is_emergency"
+                    (click)="incident.is_emergency = !incident.is_emergency">
+                    <div class="toggle-icon">🆘</div>
+                    <div class="toggle-info">
+                        <strong>Marcar como Emergência</strong>
+                        <p>Notifica vizinhos imediatamente</p>
+                    </div>
+                    <div class="toggle-switch"></div>
+                </div>
+
+                <div class="form-actions mt-8">
+                    <button type="button" routerLink="/" class="btn btn-outline">Cancelar</button>
+                    <button type="button" (click)="nextStep()" class="btn btn-primary flex-1">
+                        <span>Próximo Passo</span>
+                        <span class="btn-icon">➡️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div *ngIf="currentStep === 2" class="wizard-step">
+                <div class="instruction-card mb-6">
+                    <span class="icon">📍</span>
+                    <p>Arraste o marcador ou clique no mapa para definir o local exato</p>
+                </div>
+
+                <div class="map-container-outer mb-8">
+                    <div id="map" class="map-container shadow-inner"></div>
+                    <div class="coords-overlay">
+                        <span>LAT: {{ incident.location.latitude | number:'1.4-4' }}</span>
+                        <span class="divider">|</span>
+                        <span>LNG: {{ incident.location.longitude | number:'1.4-4' }}</span>
                     </div>
                 </div>
 
                 <div class="form-actions mt-6">
-                    <button type="button" routerLink="/" class="btn btn-outline">Cancelar</button>
-                    <button type="submit" class="btn btn-primary flex-1">
+                    <button type="button" (click)="prevStep()" class="btn btn-outline">Voltar</button>
+                    <button type="button" (click)="nextStep()" class="btn btn-primary flex-1">
+                        <span>Confirmar Local</span>
+                        <span class="btn-icon">➡️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Details -->
+            <div *ngIf="currentStep === 3" class="wizard-step">
+                <div class="input-group">
+                    <label>Título do Relato</label>
+                    <input type="text" [(ngModel)]="incident.title" name="title" placeholder="Ex: Suspeito na Rua das Flores">
+                </div>
+
+                <div class="input-group">
+                    <label>Descrição Detalhada</label>
+                    <textarea [(ngModel)]="incident.description" name="description" rows="4"
+                        placeholder="Descreva detalhes como vestimentas, veículos ou situação..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label>Anexar Foto (Opcional)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" (change)="onFileSelected($event)" id="file-upload" class="hidden-input">
+                        <label for="file-upload" class="file-upload-btn glass-card">
+                            <span class="icon">📸</span>
+                            <span>{{ selectedFile ? selectedFile.name : 'Selecionar Imagem' }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions mt-8">
+                    <button type="button" (click)="prevStep()" class="btn btn-outline">Voltar</button>
+                    <button type="button" (click)="onSubmit()" class="btn btn-primary flex-1">
                         <span>Enviar Relato Agora</span>
                         <span class="btn-icon">⚡</span>
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

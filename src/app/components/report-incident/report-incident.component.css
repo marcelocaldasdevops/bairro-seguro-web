@@ -1,71 +1,179 @@
 .report-wrapper {
-    display: flex;
-    justify-content: center;
-    padding: 3rem 1.5rem 6rem;
+    padding: 2rem 0;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .report-card {
-    width: 100%;
-    max-width: 860px;
-    padding: 3rem;
-    border-radius: 1.5rem;
+    padding: 2.5rem;
 }
 
-.report-header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--glass-border);
-    padding-bottom: 1.5rem;
+/* Wizard Progress */
+.wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.report-header h2 {
+.step {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.step span {
+    position: absolute;
+    top: 40px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.step.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.connector {
+    width: 60px;
+    height: 2px;
+    background: var(--glass-border);
+}
+
+.connector.active {
+    background: var(--primary);
+}
+
+/* Emergency Toggle */
+.emergency-toggle {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    margin-top: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.emergency-toggle.active {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.toggle-icon {
     font-size: 2rem;
+}
+
+.toggle-info {
+    flex: 1;
+}
+
+.toggle-info strong {
+    display: block;
+    font-size: 1.1rem;
     margin-bottom: 0.25rem;
 }
 
-.instruction-card {
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    padding: 1rem 1.25rem;
-    border-radius: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-weight: 500;
-    color: var(--primary);
-    font-size: 0.95rem;
+.toggle-info p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
 }
 
+.toggle-switch {
+    width: 48px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.active .toggle-switch {
+    background: #ef4444;
+}
+
+.active .toggle-switch::after {
+    left: 26px;
+}
+
+/* Map & Coords */
 .map-container-outer {
     position: relative;
-    border-radius: 1rem;
-    overflow: hidden;
 }
 
 .coords-overlay {
     position: absolute;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    background: rgba(7, 11, 20, 0.85);
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(8px);
     padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--glass-border);
+    border-radius: 100px;
     font-size: 0.75rem;
-    font-family: monospace;
+    font-weight: 600;
+    z-index: 1000;
     display: flex;
     gap: 0.75rem;
-    z-index: 1000;
-    color: var(--primary);
+    border: 1px solid var(--glass-border);
 }
 
-.divider {
-    opacity: 0.3;
+/* File Upload */
+.file-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    cursor: pointer;
+    border: 2px dashed var(--glass-border);
+    transition: all 0.3s ease;
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+.file-upload-btn:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.hidden-input {
+    display: none;
+}
+
+.instruction-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }
 
 .form-actions {
@@ -79,13 +187,4 @@
 
 .btn-icon {
     font-size: 1.1rem;
-}
-
-.select-wrapper {
-    position: relative;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 120px;
 }

@@ -1,57 +1,115 @@
-<div class="home-container">
-    <header class="flex justify-between items-center mb-10">
-        <div class="flex items-center gap-6">
-            <img src="assets/logo.png" alt="Logo" class="header-logo">
-            <div>
-                <h1 class="main-title">Bairro Seguro</h1>
-                <p class="subtitle">Monitoramento colaborativo e inteligente em tempo real</p>
-            </div>
+<div class="home-view-wrapper">
+    <!-- Sidebar -->
+    <aside class="sidebar-nav glass-card">
+        <div class="brand-section mb-8">
+            <img src="assets/logo.png" alt="Logo" class="sidebar-logo">
+            <h1 class="sidebar-title">Bairro Seguro</h1>
         </div>
-        <button *ngIf="isLoggedIn" routerLink="/report" class="btn btn-primary">
-            <span>Relatar Novo</span>
-        </button>
-    </header>
 
-    <div class="glass-card map-wrapper mb-12">
-        <div id="main-map" class="map-container" style="height: 550px;"></div>
-    </div>
-
-    <div class="section-header mb-6">
-        <h2>Ocorrências Recentes</h2>
-        <div class="header-line"></div>
-    </div>
-
-    <div class="incidents-grid" *ngIf="incidents.length > 0; else noIncidents">
-        <div *ngFor="let incident of incidents" class="glass-card incident-card" (click)="focusOnIncident(incident)">
-            <div class="card-header">
-                <div class="severity-indicator" [ngClass]="'severity-' + incident.severity_level.toLowerCase()"></div>
-                <span class="severity-label">{{ incident.severity_level }}</span>
+        <div class="sidebar-kpis mb-8">
+            <div class="mini-kpi">
+                <span class="kpi-icon">🛡️</span>
+                <div class="kpi-details">
+                    <span class="label">Status</span>
+                    <span class="value">{{ kpis.areaStatus }}%</span>
+                </div>
             </div>
-            <h3 class="description">{{ incident.description | slice:0:120 }}{{ incident.description.length > 120 ? '...'
-                : '' }}</h3>
-
-            <div class="card-footer">
-                <div class="meta-item">
-                    <span class="icon">📅</span>
-                    <span>{{ incident.datetime | date:'short' }}</span>
+            <div class="mini-kpi">
+                <span class="kpi-icon">🚨</span>
+                <div class="kpi-details">
+                    <span class="label">24h</span>
+                    <span class="value">{{ kpis.total24h }}</span>
                 </div>
-                <div class="meta-item">
-                    <span class="icon">📍</span>
-                    <span>{{ incident.location.latitude | number:'1.3-3' }}, {{ incident.location.longitude |
-                        number:'1.3-3' }}</span>
-                </div>
-                <div class="user-info">
-                    <div class="avatar">{{ incident.user[0] | uppercase }}</div>
-                    <span>{{ incident.user }}</span>
+            </div>
+            <div class="mini-kpi">
+                <span class="kpi-icon">🔥</span>
+                <div class="kpi-details">
+                    <span class="label">Críticos</span>
+                    <span class="value">{{ kpis.criticalAlerts }}</span>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="sidebar-filters mb-8">
+            <div class="filter-item">
+                <label>Categoria</label>
+                <select [(ngModel)]="filters.category" (change)="applyFilters()" class="sidebar-select">
+                    <option value="">Todas</option>
+                    <option value="Assalto">Assalto</option>
+                    <option value="Acidente">Acidente</option>
+                    <option value="Suspeito">Suspeito</option>
+                    <option value="Infraestrutura">Infraestrutura</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>Distância</label>
+                <select [(ngModel)]="filters.radius" (change)="applyFilters()" class="sidebar-select">
+                    <option value="">Qualquer</option>
+                    <option value="500">500m</option>
+                    <option value="1000">1km</option>
+                    <option value="5000">5km</option>
+                </select>
+            </div>
+            <button class="btn btn-outline w-full mt-4" (click)="getCurrentLocation()">
+                <span>📍 Localização</span>
+            </button>
+        </div>
+
+        <div class="sidebar-actions">
+            <button *ngIf="isLoggedIn" routerLink="/report" class="btn btn-primary w-full mb-3">
+                <span>Relatar Novo</span>
+            </button>
+            <button *ngIf="isLoggedIn" routerLink="/profile" class="btn btn-outline w-full">
+                <span>Meu Perfil</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-layout">
+        <div class="map-section glass-card">
+            <div id="main-map" class="map-container"></div>
+        </div>
+
+        <div class="feed-section">
+            <div class="feed-header flex justify-between items-center mb-4">
+                <h2 class="feed-title">Feed de Ocorrências</h2>
+                <div class="carousel-controls">
+                    <button class="ctrl-btn" (click)="scrollFeed(-300)">‹</button>
+                    <button class="ctrl-btn" (click)="scrollFeed(300)">›</button>
+                </div>
+            </div>
+
+            <div class="carousel-viewport" #carouselContainer>
+                <div class="carousel-track" *ngIf="incidents.length > 0; else noIncidents">
+                    <div *ngFor="let incident of incidents" class="glass-card incident-card-carousel"
+                        (click)="focusOnIncident(incident)">
+                        <div class="card-top">
+                            <span class="severity-dot" [ngClass]="'severity-' + incident.severity_level.toLowerCase()"></span>
+                            <span class="cat-label">{{ incident.category || 'Geral' }}</span>
+                        </div>
+                        <p class="desc-text">{{ incident.description | slice:0:60 }}{{ incident.description.length > 60 ? '...' : '' }}</p>
+                        <div class="card-btm">
+                            <span class="date">{{ incident.datetime | date:'shortTime' }}</span>
+                            <span class="user">👤 {{ incident.user }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <ng-template #noIncidents>
-        <div class="glass-card empty-state">
-            <div class="empty-icon">🛡️</div>
-            <p>Nenhum incidente relatado recentemente. A comunidade está segura!</p>
+        <div class="empty-carousel">
+            <p>Nenhum incidente encontrado.</p>
         </div>
     </ng-template>
+
+    <!-- Incident Details Panel -->
+    <app-incident-details 
+        *ngIf="selectedIncident" 
+        [incident]="selectedIncident" 
+        (close)="selectedIncident = null">
+    </app-incident-details>
 </div>

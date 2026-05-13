@@ -7,20 +7,32 @@ import { ApiService } from '../../services/api.service';
   styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
-  user: any = {};
+  user: any = {
+    name: '',
+    cpf: '',
+    bairro: '',
+    email: ''
+  };
   isProfileComplete = false;
+  loading = true;
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
-    this.api.getMe().subscribe(data => {
-      this.user = data;
-      this.checkProfile();
+    this.api.getMe().subscribe({
+      next: (data) => {
+        this.user = { ...this.user, ...data };
+        this.checkProfile();
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+      }
     });
   }
 
   checkProfile() {
-    this.isProfileComplete = !!(this.user.name && this.user.cpf && this.user.bairro);
+    this.isProfileComplete = !!(this.user.name?.trim() && this.user.cpf?.trim() && this.user.bairro?.trim());
   }
 
   onSubmit() {
@@ -28,9 +40,12 @@ export class ProfileComponent implements OnInit {
       next: (res) => {
         this.user = res;
         this.checkProfile();
-        alert('Perfil atualizado!');
+        alert('Perfil atualizado com sucesso!');
       },
-      error: (err) => alert('Erro ao atualizar perfil')
+      error: (err) => {
+        console.error(err);
+        alert('Erro ao atualizar perfil. Verifique os dados e tente novamente.');
+      }
     });
   }
 }

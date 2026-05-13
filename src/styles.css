@@ -2,33 +2,29 @@
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 :root {
-    /* HSL Color Palette - Deep Blue/Indigo vibe */
-    --primary-h: 239;
-    --primary-s: 84%;
-    --primary-l: 67%;
-    --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
-    --primary-hover: hsl(var(--primary-h), var(--primary-s), 60%);
+    /* Updated Color Palette from App System Design */
+    --primary: #5A8CFF;
+    --primary-hover: #4a7be6;
+    --secondary: #365FD9;
+    --accent: #00D1FF;
 
-    --secondary: hsla(330, 81%, 60%, 1);
-    --accent: hsla(190, 90%, 50%, 1);
+    --bg-dark: #0B0F14;
+    --bg-card: rgba(21, 27, 36, 0.8);
+    --bg-card-hover: rgba(29, 36, 48, 0.95);
 
-    --bg-dark: #070b14;
-    --bg-card: rgba(16, 22, 38, 0.7);
-    --bg-card-hover: rgba(23, 33, 58, 0.85);
+    --text-main: #FFFFFF;
+    --text-muted: #9AA4B2;
 
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-
-    --danger: #ff4d4d;
-    --warning: #ffb84d;
-    --success: #2ecc71;
+    --danger: #FF4D4D;
+    --warning: #FFB84D;
+    --success: #10B981;
 
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-focus: rgba(255, 255, 255, 0.2);
+    --glass-border-focus: rgba(255, 255, 255, 0.15);
 
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
