@@ -15,7 +15,7 @@ export class ApiService {
     const token = localStorage.getItem('token');
     let headers = new HttpHeaders();
     if (token) {
-      headers = headers.set('Authorization', `Token ${token}`);
+      headers = headers.set('Authorization', `Bearer ${token}`);
     }
     return headers;
   }
@@ -35,6 +35,14 @@ export class ApiService {
   createIncident(incidentData: FormData | any): Observable<any> {
     return this.http.post(`${this.apiUrl}/incidents/`, incidentData, { headers: this.getHeaders() });
   }
+
+  uploadAttachment(incidentId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('attachment_type', 'IMAGE');
+    return this.http.post(`${this.apiUrl}/incidents/${incidentId}/attachments/`, formData, { headers: this.getHeaders() });
+  }
+
 
   // Social Features
   addComment(incidentId: number, content: string): Observable<any> {

@@ -54,7 +54,22 @@ export class ReportIncidentComponent implements AfterViewInit {
   nextStep() {
     if (this.currentStep === 1) {
       this.currentStep = 2;
-      setTimeout(() => this.initMap(), 100);
+      if (!this.map && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            this.incident.location.latitude = parseFloat(pos.coords.latitude.toFixed(6));
+            this.incident.location.longitude = parseFloat(pos.coords.longitude.toFixed(6));
+            setTimeout(() => this.initMap(), 100);
+          },
+          (err) => {
+            console.warn('Erro ao obter geolocalização, usando padrão:', err);
+            setTimeout(() => this.initMap(), 100);
+          },
+          { timeout: 3000 }
+        );
+      } else {
+        setTimeout(() => this.initMap(), 100);
+      }
     } else if (this.currentStep === 2) {
       this.currentStep = 3;
     }
@@ -100,23 +115,36 @@ export class ReportIncidentComponent implements AfterViewInit {
   }
 
   onSubmit() {
-    const formData = new FormData();
-    formData.append('title', this.incident.title);
-    formData.append('description', this.incident.description);
-    formData.append('category', this.incident.category);
-    formData.append('severity_level', this.incident.severity_level);
-    formData.append('is_emergency', String(this.incident.is_emergency));
-    formData.append('latitude', String(this.incident.location.latitude));
-    formData.append('longitude', String(this.incident.location.longitude));
-    
-    if (this.selectedFile) {
-      formData.append('media', this.selectedFile);
-    }
+    const payload = {
+      title: this.incident.title,
+      description: this.incident.description,
+      category: this.incident.category.toUpperCase(),
+      severity_level: this.incident.severity_level,
+      is_emergency: this.incident.is_emergency,
+      location: {
+        latitude: this.incident.location.latitude,
+        longitude: this.incident.location.longitude
+      }
+    };
 
-    this.api.createIncident(formData).subscribe({
-      next: () => {
-        alert('Incidente relatado com sucesso! A comunidade agradece.');
-        this.router.navigate(['/']);
+    this.api.createIncident(payload).subscribe({
+      next: (createdIncident) => {
+        if (this.selectedFile && createdIncident && createdIncident.id) {
+          this.api.uploadAttachment(createdIncident.id, this.selectedFile).subscribe({
+            next: () => {
+              alert('Incidente relatado com sucesso! A comunidade agradece.');
+              this.router.navigate(['/']);
+            },
+            error: (uploadErr) => {
+              console.error('Erro ao fazer upload da imagem:', uploadErr);
+              alert('Incidente relatado, mas ocorreu um erro ao enviar a imagem.');
+              this.router.navigate(['/']);
+            }
+          });
+        } else {
+          alert('Incidente relatado com sucesso! A comunidade agradece.');
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         console.error(err);

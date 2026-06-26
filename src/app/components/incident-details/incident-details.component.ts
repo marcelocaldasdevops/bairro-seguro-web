@@ -18,6 +18,9 @@ export class IncidentDetailsComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['incident'] && this.incident) {
+      if (!this.incident.media_url && this.incident.attachments && this.incident.attachments.length > 0) {
+        this.incident.media_url = this.incident.attachments[0].file_url;
+      }
       this.loadComments();
     }
   }
