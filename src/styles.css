@@ -25,6 +25,9 @@
     --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+
+    --container-max-width: 1720px;
+    --container-padding: clamp(1rem, 3vw, 2rem);
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
@@ -67,9 +70,10 @@ body {
 }
 
 .container {
-    max-width: 1280px;
+    width: 100%;
+    max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 var(--container-padding);
 }
 
 /* Glassmorphism System */

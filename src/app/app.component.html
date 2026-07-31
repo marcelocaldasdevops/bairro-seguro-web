@@ -1,17 +1,34 @@
 <nav class="navbar glass-card">
-    <div class="container flex justify-between items-center">
-        <div class="logo">
+    <div class="container navbar-inner flex justify-between items-center">
+        <div class="logo" routerLink="/">
             <img src="assets/logo.png" alt="Logo" class="nav-logo">
             <span class="logo-text">Bairro <span class="highlight">Seguro</span></span>
         </div>
-        <div class="nav-links flex gap-4">
-            <a routerLink="/" class="nav-link">Home</a>
-            <a *ngIf="!isLoggedIn" routerLink="/login" class="nav-link">Login</a>
-            <a *ngIf="!isLoggedIn" routerLink="/register" class="nav-link">Cadastrar</a>
-            <a *ngIf="isLoggedIn" routerLink="/report" class="nav-link">Relatar Incidente</a>
-            <a *ngIf="isLoggedIn" routerLink="/profile" class="nav-link">Meu Perfil</a>
+
+        <button class="mobile-toggle" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen" aria-label="Menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-links desktop-links flex gap-4">
+            <a routerLink="/" class="nav-link" (click)="closeMobileMenu()">Home</a>
+            <a *ngIf="!isLoggedIn" routerLink="/login" class="nav-link" (click)="closeMobileMenu()">Login</a>
+            <a *ngIf="!isLoggedIn" routerLink="/register" class="nav-link" (click)="closeMobileMenu()">Cadastrar</a>
+            <a *ngIf="isLoggedIn" routerLink="/report" class="nav-link" (click)="closeMobileMenu()">Relatar Incidente</a>
+            <a *ngIf="isLoggedIn" routerLink="/profile" class="nav-link" (click)="closeMobileMenu()">Meu Perfil</a>
             <a *ngIf="isLoggedIn" (click)="logout()" class="nav-link cursor-pointer">Sair</a>
         </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div class="mobile-dropdown" [class.open]="isMobileMenuOpen">
+        <a routerLink="/" class="mobile-nav-link" (click)="closeMobileMenu()">Home</a>
+        <a *ngIf="!isLoggedIn" routerLink="/login" class="mobile-nav-link" (click)="closeMobileMenu()">Login</a>
+        <a *ngIf="!isLoggedIn" routerLink="/register" class="mobile-nav-link" (click)="closeMobileMenu()">Cadastrar</a>
+        <a *ngIf="isLoggedIn" routerLink="/report" class="mobile-nav-link" (click)="closeMobileMenu()">Relatar Incidente</a>
+        <a *ngIf="isLoggedIn" routerLink="/profile" class="mobile-nav-link" (click)="closeMobileMenu()">Meu Perfil</a>
+        <a *ngIf="isLoggedIn" (click)="logout()" class="mobile-nav-link cursor-pointer">Sair</a>
     </div>
 </nav>
 

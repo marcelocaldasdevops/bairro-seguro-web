@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   isLoggedIn = false;
+  isMobileMenuOpen = false;
 
   constructor(private router: Router) {}
 
@@ -21,10 +22,19 @@ export class AppComponent implements OnInit {
     this.isLoggedIn = !!localStorage.getItem('token');
   }
 
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu() {
+    this.isMobileMenuOpen = false;
+  }
+
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.isLoggedIn = false;
+    this.closeMobileMenu();
     this.router.navigate(['/login']);
   }
 }
