@@ -1,55 +1,57 @@
-<div class="details-panel glass-card animate-fade-in" *ngIf="incident">
-    <button class="close-btn" (click)="close.emit()">×</button>
+<div class="modal-overlay" (click)="onBackdropClick($event)" role="dialog" aria-modal="true" aria-labelledby="modal-title" *ngIf="incident">
+    <div class="details-panel glass-card animate-fade-in">
+        <button class="close-btn" (click)="closeModal()" aria-label="Fechar modal">×</button>
 
-    <header class="details-header">
-        <div class="badge-row">
-            <span class="badge" [ngClass]="incident.severity_level.toLowerCase()">{{ incident.severity_level }}</span>
-            <span class="category-tag">{{ incident.category }}</span>
-        </div>
-        <h2>{{ incident.title || 'Incidente sem título' }}</h2>
-        <div class="meta-row">
-            <span>👤 {{ incident.user }}</span>
-            <span>📅 {{ incident.datetime | date:'short' }}</span>
-        </div>
-    </header>
+        <header class="details-header">
+            <div class="badge-row">
+                <span class="badge" [ngClass]="incident.severity_level.toLowerCase()">{{ incident.severity_level }}</span>
+                <span class="category-tag">{{ incident.category }}</span>
+            </div>
+            <h2 id="modal-title">{{ incident.title || 'Incidente sem título' }}</h2>
+            <div class="meta-row">
+                <span>👤 {{ incident.user }}</span>
+                <span>📅 {{ incident.datetime | date:'short' }}</span>
+            </div>
+        </header>
 
-    <div class="details-body">
-        <div class="media-container" *ngIf="incident.media_url">
-            <img [src]="incident.media_url" alt="Evidência do incidente" class="incident-image">
-        </div>
-
-        <p class="description">{{ incident.description }}</p>
-
-        <div class="social-actions mt-6">
-            <button class="btn btn-outline flex-1" (click)="onConfirm()">
-                <span>👍 Eu vi isso também</span>
-                <span class="count" *ngIf="incident.confirmations_count">{{ incident.confirmations_count }}</span>
-            </button>
-        </div>
-
-        <section class="comments-section mt-8">
-            <h3>Comentários ({{ comments.length }})</h3>
-            
-            <div class="comment-list mt-4">
-                <div *ngIf="loadingComments" class="text-center py-4">Carregando...</div>
-                <div *ngFor="let comment of comments" class="comment-item">
-                    <div class="comment-meta">
-                        <strong>{{ comment.user }}</strong>
-                        <span>{{ comment.created_at | date:'short' }}</span>
-                    </div>
-                    <p>{{ comment.content }}</p>
-                </div>
-                <div *ngIf="!loadingComments && comments.length === 0" class="empty-comments">
-                    Ninguém comentou ainda. Seja o primeiro!
-                </div>
+        <div class="details-body">
+            <div class="media-container" *ngIf="incident.media_url">
+                <img [src]="incident.media_url" alt="Evidência do incidente" class="incident-image">
             </div>
 
-            <div class="add-comment mt-6">
-                <textarea [(ngModel)]="newComment" placeholder="Adicione uma atualização ou detalhe..." rows="2"></textarea>
-                <button class="btn btn-primary mt-2 w-full" (click)="onAddComment()" [disabled]="!newComment.trim()">
-                    <span>Enviar Comentário</span>
+            <p class="description">{{ incident.description }}</p>
+
+            <div class="social-actions mt-6">
+                <button class="btn btn-outline flex-1" (click)="onConfirm()">
+                    <span>👍 Eu vi isso também</span>
+                    <span class="count" *ngIf="incident.confirmations_count">{{ incident.confirmations_count }}</span>
                 </button>
             </div>
-        </section>
+
+            <section class="comments-section mt-8">
+                <h3>Comentários ({{ comments.length }})</h3>
+                
+                <div class="comment-list mt-4">
+                    <div *ngIf="loadingComments" class="text-center py-4">Carregando...</div>
+                    <div *ngFor="let comment of comments" class="comment-item">
+                        <div class="comment-meta">
+                            <strong>{{ comment.user }}</strong>
+                            <span>{{ comment.created_at | date:'short' }}</span>
+                        </div>
+                        <p>{{ comment.content }}</p>
+                    </div>
+                    <div *ngIf="!loadingComments && comments.length === 0" class="empty-comments">
+                        Ninguém comentou ainda. Seja o primeiro!
+                    </div>
+                </div>
+
+                <div class="add-comment mt-6">
+                    <textarea [(ngModel)]="newComment" placeholder="Adicione uma atualização ou detalhe..." rows="2"></textarea>
+                    <button class="btn btn-primary mt-2 w-full" (click)="onAddComment()" [disabled]="!newComment.trim()">
+                        <span>Enviar Comentário</span>
+                    </button>
+                </div>
+            </section>
+        </div>
     </div>
 </div>

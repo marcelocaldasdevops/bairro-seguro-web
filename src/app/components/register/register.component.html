@@ -42,9 +42,9 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-primary w-full mt-4" 
-                [disabled]="!userData.confirmPassword || userData.password !== userData.confirmPassword">
-                <span>Criar Minha Conta</span>
-                <span class="btn-icon">✨</span>
+                [disabled]="isLoading || !userData.confirmPassword || userData.password !== userData.confirmPassword">
+                <span *ngIf="!isLoading">Criar Minha Conta ✨</span>
+                <span *ngIf="isLoading">⏳ Criando Conta...</span>
             </button>
         </form>
 

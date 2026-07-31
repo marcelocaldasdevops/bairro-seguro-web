@@ -82,7 +82,17 @@
             </div>
 
             <div class="carousel-viewport" #carouselContainer>
-                <div class="carousel-track" *ngIf="incidents.length > 0; else noIncidents">
+                <!-- Skeleton Loading Cards -->
+                <div class="carousel-track" *ngIf="isLoading">
+                    <div class="glass-card incident-card-carousel skeleton-card" *ngFor="let item of [1,2,3,4]">
+                        <div class="skeleton-line short mb-2"></div>
+                        <div class="skeleton-line medium mb-2"></div>
+                        <div class="skeleton-line full"></div>
+                    </div>
+                </div>
+
+                <!-- Incident Cards -->
+                <div class="carousel-track" *ngIf="!isLoading && incidents.length > 0">
                     <div *ngFor="let incident of incidents" class="glass-card incident-card-carousel"
                         (click)="focusOnIncident(incident)">
                         <div class="card-top">
@@ -96,15 +106,14 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Empty State -->
+                <div class="empty-carousel" *ngIf="!isLoading && incidents.length === 0">
+                    <p>🔍 Nenhum incidente encontrado para este filtro.</p>
+                </div>
             </div>
         </div>
     </main>
-
-    <ng-template #noIncidents>
-        <div class="empty-carousel">
-            <p>Nenhum incidente encontrado.</p>
-        </div>
-    </ng-template>
 
     <!-- Incident Details Panel -->
     <app-incident-details 

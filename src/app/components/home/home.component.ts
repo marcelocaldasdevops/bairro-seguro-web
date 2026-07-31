@@ -12,6 +12,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   
   incidents: any[] = [];
   isLoggedIn = false;
+  isLoading = true;
   selectedIncident: any = null;
   
   filters = {
@@ -54,10 +55,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   loadIncidents() {
-    this.api.getIncidents(this.filters).subscribe(data => {
-      this.incidents = data;
-      this.calculateKPIs();
-      this.addMarkers();
+    this.isLoading = true;
+    this.api.getIncidents(this.filters).subscribe({
+      next: (data) => {
+        this.incidents = data;
+        this.calculateKPIs();
+        this.addMarkers();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao carregar incidentes:', err);
+        this.isLoading = false;
+      }
     });
   }
 

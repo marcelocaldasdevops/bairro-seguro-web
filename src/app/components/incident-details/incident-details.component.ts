@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -15,6 +15,21 @@ export class IncidentDetailsComponent implements OnChanges {
   loadingComments = false;
 
   constructor(private api: ApiService) {}
+
+  @HostListener('document:keydown.escape', ['$event'])
+  handleEscape(event: KeyboardEvent) {
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.close.emit();
+  }
+
+  onBackdropClick(event: MouseEvent) {
+    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
+      this.closeModal();
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['incident'] && this.incident) {

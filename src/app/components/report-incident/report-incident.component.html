@@ -2,9 +2,9 @@
     <div class="glass-card report-card animate-fade-in">
         <header class="report-header">
             <div class="wizard-progress mb-6">
-                <div class="step" [class.active]="currentStep >= 1">1<span>Tipo</span></div>
+                <div class="step" [class.active]="currentStep >= 1" (click)="goToStep(1)" [style.cursor]="currentStep > 1 ? 'pointer' : 'default'">1<span>Tipo</span></div>
                 <div class="connector" [class.active]="currentStep >= 2"></div>
-                <div class="step" [class.active]="currentStep >= 2">2<span>Local</span></div>
+                <div class="step" [class.active]="currentStep >= 2" (click)="goToStep(2)" [style.cursor]="currentStep > 2 ? 'pointer' : 'default'">2<span>Local</span></div>
                 <div class="connector" [class.active]="currentStep >= 3"></div>
                 <div class="step" [class.active]="currentStep >= 3">3<span>Detalhes</span></div>
             </div>
@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="emergency-toggle glass-card" [class.active]="incident.is_emergency"
-                    (click)="incident.is_emergency = !incident.is_emergency">
+                    (click)="incident.is_emergency = !incident.is_emergency" tabindex="0" role="checkbox" [attr.aria-checked]="incident.is_emergency">
                     <div class="toggle-icon">🆘</div>
                     <div class="toggle-info">
                         <strong>Marcar como Emergência</strong>
@@ -60,9 +60,14 @@
 
             <!-- Step 2: Location -->
             <div *ngIf="currentStep === 2" class="wizard-step">
-                <div class="instruction-card mb-6">
-                    <span class="icon">📍</span>
-                    <p>Arraste o marcador ou clique no mapa para definir o local exato</p>
+                <div class="instruction-card mb-6 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="icon">📍</span>
+                        <p>Arraste o marcador ou clique no mapa para definir o local exato</p>
+                    </div>
+                    <button type="button" (click)="useCurrentLocation()" class="btn btn-outline btn-sm">
+                        🎯 Usar Minha Localização
+                    </button>
                 </div>
 
                 <div class="map-container-outer mb-8">
@@ -98,20 +103,20 @@
 
                 <div class="input-group">
                     <label>Anexar Foto (Opcional)</label>
-                    <div class="file-upload-wrapper">
+                    <div class="file-upload-wrapper" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
                         <input type="file" (change)="onFileSelected($event)" id="file-upload" class="hidden-input">
-                        <label for="file-upload" class="file-upload-btn glass-card">
+                        <label for="file-upload" class="file-upload-btn glass-card" [class.drag-over]="isDraggingFile">
                             <span class="icon">📸</span>
-                            <span>{{ selectedFile ? selectedFile.name : 'Selecionar Imagem' }}</span>
+                            <span>{{ selectedFile ? selectedFile.name : 'Clique ou Arraste uma Imagem Aqui' }}</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="form-actions mt-8">
-                    <button type="button" (click)="prevStep()" class="btn btn-outline">Voltar</button>
-                    <button type="button" (click)="onSubmit()" class="btn btn-primary flex-1">
-                        <span>Enviar Relato Agora</span>
-                        <span class="btn-icon">⚡</span>
+                    <button type="button" (click)="prevStep()" class="btn btn-outline" [disabled]="isSubmitting">Voltar</button>
+                    <button type="button" (click)="onSubmit()" class="btn btn-primary flex-1" [disabled]="isSubmitting">
+                        <span *ngIf="!isSubmitting">Enviar Relato Agora ⚡</span>
+                        <span *ngIf="isSubmitting">⏳ Enviando Relato...</span>
                     </button>
                 </div>
             </div>

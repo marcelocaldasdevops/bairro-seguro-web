@@ -10,6 +10,7 @@ import { ApiService } from '../../services/api.service';
 export class LoginComponent {
   credentials = { email: '', password: '' };
   showPassword = false;
+  isLoading = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
@@ -18,13 +19,20 @@ export class LoginComponent {
   }
 
   onSubmit() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
     this.api.login(this.credentials).subscribe({
       next: (res) => {
+        this.isLoading = false;
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         window.location.href = '/'; // Simple way to refresh app state
       },
-      error: (err) => alert('Erro no login: ' + (err.error?.error || 'Verifique suas credenciais'))
+      error: (err) => {
+        this.isLoading = false;
+        alert('Erro no login: ' + (err.error?.error || 'Verifique suas credenciais'));
+      }
     });
   }
 }

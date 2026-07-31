@@ -15,6 +15,8 @@ export class ReportIncidentComponent implements AfterViewInit {
   currentStep = 1;
   isProfileComplete = false;
   selectedFile: File | null = null;
+  isSubmitting = false;
+  isDraggingFile = false;
 
   incident = {
     title: '',
@@ -51,22 +53,20 @@ export class ReportIncidentComponent implements AfterViewInit {
     // Map will be initialized in Step 2
   }
 
+  goToStep(step: number) {
+    if (step < this.currentStep) {
+      this.currentStep = step;
+      if (step === 2) {
+        setTimeout(() => this.initMap(), 100);
+      }
+    }
+  }
+
   nextStep() {
     if (this.currentStep === 1) {
       this.currentStep = 2;
       if (!this.map && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            this.incident.location.latitude = parseFloat(pos.coords.latitude.toFixed(6));
-            this.incident.location.longitude = parseFloat(pos.coords.longitude.toFixed(6));
-            setTimeout(() => this.initMap(), 100);
-          },
-          (err) => {
-            console.warn('Erro ao obter geolocalização, usando padrão:', err);
-            setTimeout(() => this.initMap(), 100);
-          },
-          { timeout: 3000 }
-        );
+        this.useCurrentLocation();
       } else {
         setTimeout(() => this.initMap(), 100);
       }
@@ -76,7 +76,36 @@ export class ReportIncidentComponent implements AfterViewInit {
   }
 
   prevStep() {
-    this.currentStep--;
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      if (this.currentStep === 2) {
+        setTimeout(() => this.initMap(), 100);
+      }
+    }
+  }
+
+  useCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.incident.location.latitude = parseFloat(pos.coords.latitude.toFixed(6));
+          this.incident.location.longitude = parseFloat(pos.coords.longitude.toFixed(6));
+          if (this.map && this.marker) {
+            this.map.setView([this.incident.location.latitude, this.incident.location.longitude], 16);
+            this.marker.setLatLng([this.incident.location.latitude, this.incident.location.longitude]);
+          } else {
+            setTimeout(() => this.initMap(), 100);
+          }
+        },
+        (err) => {
+          console.warn('Erro ao obter geolocalização:', err);
+          setTimeout(() => this.initMap(), 100);
+        },
+        { timeout: 5000, enableHighAccuracy: true }
+      );
+    } else {
+      setTimeout(() => this.initMap(), 100);
+    }
   }
 
   private initMap(): void {
@@ -111,10 +140,36 @@ export class ReportIncidentComponent implements AfterViewInit {
   }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    if (event.target.files && event.target.files[0]) {
+      this.selectedFile = event.target.files[0];
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingFile = false;
+    if (event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+      this.selectedFile = event.dataTransfer.files[0];
+    }
   }
 
   onSubmit() {
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
+
     const payload = {
       title: this.incident.title,
       description: this.incident.description,
@@ -132,21 +187,25 @@ export class ReportIncidentComponent implements AfterViewInit {
         if (this.selectedFile && createdIncident && createdIncident.id) {
           this.api.uploadAttachment(createdIncident.id, this.selectedFile).subscribe({
             next: () => {
+              this.isSubmitting = false;
               alert('Incidente relatado com sucesso! A comunidade agradece.');
               this.router.navigate(['/']);
             },
             error: (uploadErr) => {
+              this.isSubmitting = false;
               console.error('Erro ao fazer upload da imagem:', uploadErr);
               alert('Incidente relatado, mas ocorreu um erro ao enviar a imagem.');
               this.router.navigate(['/']);
             }
           });
         } else {
+          this.isSubmitting = false;
           alert('Incidente relatado com sucesso! A comunidade agradece.');
           this.router.navigate(['/']);
         }
       },
       error: (err) => {
+        this.isSubmitting = false;
         console.error(err);
         alert('Erro ao enviar relato. Tente novamente.');
       }

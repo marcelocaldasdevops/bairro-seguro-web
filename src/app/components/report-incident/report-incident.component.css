@@ -176,6 +176,18 @@
     color: var(--text-muted);
 }
 
+.file-upload-btn.drag-over {
+    border-color: var(--primary);
+    background: rgba(90, 140, 255, 0.15);
+    box-shadow: 0 0 20px rgba(90, 140, 255, 0.3);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: 0.5rem;
+}
+
 .form-actions {
     display: flex;
     gap: 1rem;

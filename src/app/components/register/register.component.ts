@@ -11,6 +11,7 @@ export class RegisterComponent {
   userData = { username: '', email: '', password: '', confirmPassword: '' };
   showPassword = false;
   showConfirmPassword = false;
+  isLoading = false;
 
   constructor(private api: ApiService, private router: Router) {}
 
@@ -18,20 +19,25 @@ export class RegisterComponent {
   toggleConfirmPassword() { this.showConfirmPassword = !this.showConfirmPassword; }
 
   onSubmit() {
+    if (this.isLoading) return;
+
     if (this.userData.password !== this.userData.confirmPassword) {
       alert('As senhas não coincidem!');
       return;
     }
 
+    this.isLoading = true;
     const { confirmPassword, ...payload } = this.userData;
 
     this.api.register(payload).subscribe({
       next: () => {
+        this.isLoading = false;
         alert('Cadastro realizado com sucesso! Faça login para continuar.');
         this.userData = { username: '', email: '', password: '', confirmPassword: '' };
         this.router.navigate(['/login']);
       },
       error: (err) => {
+        this.isLoading = false;
         console.error('Erro no cadastro:', err);
         let errorMsg = 'Erro ao realizar cadastro.';
         

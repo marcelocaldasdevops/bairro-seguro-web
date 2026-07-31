@@ -25,9 +25,9 @@
                     </button>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary w-full mt-4">
-                <span>Entrar</span>
-                <span class="btn-icon">→</span>
+            <button type="submit" class="btn btn-primary w-full mt-4" [disabled]="isLoading">
+                <span *ngIf="!isLoading">Entrar →</span>
+                <span *ngIf="isLoading">⏳ Entrando...</span>
             </button>
         </form>
 
