@@ -45,10 +45,9 @@ export class ProfileComponent implements OnInit {
   }
 
   loadMyIncidents() {
-    this.api.getIncidents({}).subscribe({
+    this.api.getIncidents({ user: 'me' }).subscribe({
       next: (incidents) => {
-        const username = this.user.username || this.user.name;
-        this.myIncidents = incidents.filter((i: any) => i.user === username || i.user_id === this.user.id);
+        this.myIncidents = incidents;
         this.totalApoios = this.myIncidents.reduce((sum, i) => sum + (i.confirmations_count || 0), 0);
       },
       error: (err) => console.error('Erro ao carregar meus incidentes:', err)
