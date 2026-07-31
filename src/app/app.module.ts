@@ -11,6 +11,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ReportIncidentComponent } from './components/report-incident/report-incident.component';
 import { IncidentDetailsComponent } from './components/incident-details/incident-details.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { IncidentDetailsComponent } from './components/incident-details/incident
     RegisterComponent,
     ProfileComponent,
     ReportIncidentComponent,
-    IncidentDetailsComponent
+    IncidentDetailsComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,

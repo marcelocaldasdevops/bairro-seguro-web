@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-incident-details',
@@ -14,7 +15,7 @@ export class IncidentDetailsComponent implements OnChanges {
   newComment = '';
   loadingComments = false;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private toast: ToastService) {}
 
   @HostListener('document:keydown.escape', ['$event'])
   handleEscape(event: KeyboardEvent) {
@@ -58,8 +59,9 @@ export class IncidentDetailsComponent implements OnChanges {
       next: (comment) => {
         this.comments.push(comment);
         this.newComment = '';
+        this.toast.showSuccess('Comentário publicado!', 'Sucesso');
       },
-      error: () => alert('Erro ao adicionar comentário.')
+      error: () => this.toast.showError('Erro ao publicar comentário.', 'Erro')
     });
   }
 
@@ -67,9 +69,9 @@ export class IncidentDetailsComponent implements OnChanges {
     this.api.confirmIncident(this.incident.id).subscribe({
       next: (res) => {
         this.incident.confirmations_count = res.confirmations_count;
-        alert('Você confirmou este incidente.');
+        this.toast.showSuccess('Você confirmou esta ocorrência com a comunidade.', 'Apoio Registrado');
       },
-      error: (err) => alert(err.error?.detail || 'Erro ao confirmar incidente.')
+      error: (err) => this.toast.showWarning(err.error?.detail || 'Não foi possível confirmar este incidente.', 'Atenção')
     });
   }
 }

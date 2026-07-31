@@ -17,6 +17,24 @@
             </div>
         </div>
 
+        <!-- Community Stats Badges -->
+        <div class="profile-stats mt-6">
+            <div class="stat-card glass-card">
+                <span class="stat-icon">📢</span>
+                <div class="stat-info">
+                    <span class="stat-value">{{ myIncidents.length }}</span>
+                    <span class="stat-label">Relatos Enviados</span>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon">🤝</span>
+                <div class="stat-info">
+                    <span class="stat-value">{{ totalApoios }}</span>
+                    <span class="stat-label">Apoios da Comunidade</span>
+                </div>
+            </div>
+        </div>
+
         <form (submit)="onSubmit()" class="profile-form mt-8">
             <div class="form-grid">
                 <div class="input-group">
@@ -25,7 +43,7 @@
                 </div>
                 <div class="input-group">
                     <label>CPF</label>
-                    <input type="text" [(ngModel)]="user.cpf" name="cpf" required placeholder="000.000.000-00">
+                    <input type="text" [(ngModel)]="user.cpf" (input)="onCpfInput($event)" name="cpf" required placeholder="000.000.000-00" maxlength="14">
                 </div>
                 <div class="input-group">
                     <label>Bairro de Residência</label>
@@ -33,11 +51,38 @@
                 </div>
             </div>
 
-            <div class="form-actions mt-8">
-                <button type="submit" class="btn btn-primary w-full">
-                    <span>Salvar Alterações</span>
+            <div class="form-actions mt-6">
+                <button type="submit" class="btn btn-primary w-full" [disabled]="isSaving">
+                    <span *ngIf="!isSaving">Salvar Alterações</span>
+                    <span *ngIf="isSaving">⏳ Salvando...</span>
                 </button>
             </div>
         </form>
+
+        <!-- User Incident History Section -->
+        <section class="my-incidents-section mt-8">
+            <h3 class="section-title">📋 Meus Relatos Enviados ({{ myIncidents.length }})</h3>
+            
+            <div class="history-list mt-4" *ngIf="myIncidents.length > 0">
+                <div *ngFor="let incident of myIncidents" class="history-card glass-card">
+                    <div class="history-header">
+                        <div class="flex items-center gap-2">
+                            <span class="severity-dot" [ngClass]="'severity-' + incident.severity_level.toLowerCase()"></span>
+                            <span class="category-tag">{{ incident.category || 'Geral' }}</span>
+                        </div>
+                        <span class="history-date">{{ incident.datetime | date:'short' }}</span>
+                    </div>
+                    <h4 class="history-title">{{ incident.title || incident.description | slice:0:50 }}</h4>
+                    <p class="history-desc">{{ incident.description }}</p>
+                    <div class="history-footer">
+                        <span class="support-count">👍 {{ incident.confirmations_count || 0 }} apoios recebidos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-history mt-4" *ngIf="myIncidents.length === 0">
+                <p>Você ainda não enviou nenhum relato de incidente.</p>
+            </div>
+        </section>
     </div>
 </div>

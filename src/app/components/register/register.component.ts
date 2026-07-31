@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +14,7 @@ export class RegisterComponent {
   showConfirmPassword = false;
   isLoading = false;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router, private toast: ToastService) {}
 
   togglePassword() { this.showPassword = !this.showPassword; }
   toggleConfirmPassword() { this.showConfirmPassword = !this.showConfirmPassword; }
@@ -22,7 +23,7 @@ export class RegisterComponent {
     if (this.isLoading) return;
 
     if (this.userData.password !== this.userData.confirmPassword) {
-      alert('As senhas não coincidem!');
+      this.toast.showWarning('As senhas digitadas não coincidem.', 'Atenção');
       return;
     }
 
@@ -32,7 +33,7 @@ export class RegisterComponent {
     this.api.register(payload).subscribe({
       next: () => {
         this.isLoading = false;
-        alert('Cadastro realizado com sucesso! Faça login para continuar.');
+        this.toast.showSuccess('Cadastro realizado com sucesso! Faça login para continuar.', 'Conta Criada!');
         this.userData = { username: '', email: '', password: '', confirmPassword: '' };
         this.router.navigate(['/login']);
       },
@@ -49,7 +50,7 @@ export class RegisterComponent {
           }
         }
         
-        alert(errorMsg);
+        this.toast.showError(errorMsg, 'Erro no Cadastro');
       }
     });
   }

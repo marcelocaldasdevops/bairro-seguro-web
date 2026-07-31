@@ -1,6 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 import * as L from 'leaflet';
 
 @Component({
@@ -30,7 +31,7 @@ export class ReportIncidentComponent implements AfterViewInit {
     }
   };
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router, private toast: ToastService) {}
 
   ngOnInit() {
     this.checkProfile();
@@ -41,7 +42,7 @@ export class ReportIncidentComponent implements AfterViewInit {
       next: (user) => {
         this.isProfileComplete = !!(user.name?.trim() && user.cpf?.trim() && user.bairro?.trim());
         if (!this.isProfileComplete) {
-          alert('Você precisa completar seu perfil antes de relatar um incidente.');
+          this.toast.showWarning('Você precisa completar seu perfil antes de relatar um incidente.', 'Perfil Incompleto');
           this.router.navigate(['/profile']);
         }
       },
@@ -188,26 +189,26 @@ export class ReportIncidentComponent implements AfterViewInit {
           this.api.uploadAttachment(createdIncident.id, this.selectedFile).subscribe({
             next: () => {
               this.isSubmitting = false;
-              alert('Incidente relatado com sucesso! A comunidade agradece.');
+              this.toast.showSuccess('Incidente relatado com sucesso! A comunidade agradece.', 'Relato Enviado');
               this.router.navigate(['/']);
             },
             error: (uploadErr) => {
               this.isSubmitting = false;
               console.error('Erro ao fazer upload da imagem:', uploadErr);
-              alert('Incidente relatado, mas ocorreu um erro ao enviar a imagem.');
+              this.toast.showWarning('Incidente relatado, mas ocorreu um erro ao enviar a imagem anexada.', 'Aviso de Imagem');
               this.router.navigate(['/']);
             }
           });
         } else {
           this.isSubmitting = false;
-          alert('Incidente relatado com sucesso! A comunidade agradece.');
+          this.toast.showSuccess('Incidente relatado com sucesso! A comunidade agradece.', 'Relato Enviado');
           this.router.navigate(['/']);
         }
       },
       error: (err) => {
         this.isSubmitting = false;
         console.error(err);
-        alert('Erro ao enviar relato. Tente novamente.');
+        this.toast.showError('Erro ao enviar relato. Verifique os campos e tente novamente.', 'Erro de Envio');
       }
     });
   }
