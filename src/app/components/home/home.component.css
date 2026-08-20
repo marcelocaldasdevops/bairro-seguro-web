@@ -410,3 +410,32 @@
     70% { transform: scale(2.5); opacity: 0; }
     100% { transform: scale(1); opacity: 0; }
 }
+
+::ng-deep .user-location-marker {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 14px rgba(59, 130, 246, 0.9);
+    position: relative;
+}
+
+::ng-deep .user-location-marker::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.45);
+    animation: user-pulse 2s infinite;
+}
+
+@keyframes user-pulse {
+    0% { transform: scale(1); opacity: 0.6; }
+    70% { transform: scale(2.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 0; }
+}
+

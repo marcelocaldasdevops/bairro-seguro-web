@@ -1,5 +1,6 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, NgZone, OnDestroy } from '@angular/core';
 import { ApiService } from '../../services/api.service';
+import { ToastService } from '../../services/toast.service';
 import * as L from 'leaflet';
 
 @Component({
@@ -7,12 +8,13 @@ import * as L from 'leaflet';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit, AfterViewInit {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('carouselContainer') carouselContainer!: ElementRef;
   
   incidents: any[] = [];
   isLoggedIn = false;
   isLoading = true;
+  isLocating = false;
   selectedIncident: any = null;
   
   filters = {
@@ -31,27 +33,81 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   private map: any;
   private markers: L.Marker[] = [];
+  private userLocationMarker: L.Marker | null = null;
+  private resizeListener?: () => void;
 
-  constructor(private api: ApiService) {}
+  constructor(
+    private api: ApiService,
+    private toast: ToastService,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit() {
     this.isLoggedIn = !!localStorage.getItem('token');
-    this.getCurrentLocation();
+    this.getCurrentLocation(false);
     this.loadIncidents();
   }
 
   ngAfterViewInit() {
     this.initMap();
+    this.resizeListener = () => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    };
+    window.addEventListener('resize', this.resizeListener);
   }
 
-  getCurrentLocation() {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      this.filters.lat = pos.coords.latitude;
-      this.filters.lng = pos.coords.longitude;
-      if (this.map) {
-        this.map.setView([this.filters.lat, this.filters.lng], 14);
+  ngOnDestroy() {
+    if (this.resizeListener) {
+      window.removeEventListener('resize', this.resizeListener);
+    }
+  }
+
+  getCurrentLocation(isUserAction = false) {
+    if (!navigator.geolocation) {
+      if (isUserAction) {
+        this.toast.showWarning('Geolocalização não é suportada pelo seu navegador.', 'Localização');
       }
-    });
+      return;
+    }
+
+    this.isLocating = true;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        this.ngZone.run(() => {
+          this.filters.lat = pos.coords.latitude;
+          this.filters.lng = pos.coords.longitude;
+          this.isLocating = false;
+
+          if (this.map) {
+            this.map.setView([this.filters.lat, this.filters.lng], 14, { animate: true });
+            this.updateUserMarker(this.filters.lat, this.filters.lng);
+            this.map.invalidateSize();
+          }
+
+          this.loadIncidents();
+
+          if (isUserAction) {
+            this.toast.showSuccess('Localização e incidentes atualizados!', 'Localização');
+          }
+        });
+      },
+      (error) => {
+        this.ngZone.run(() => {
+          this.isLocating = false;
+          console.warn('Erro ao obter geolocalização:', error);
+          if (isUserAction) {
+            this.toast.showWarning('Não foi possível obter sua localização atual. Verifique as permissões do navegador.', 'Localização');
+          }
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
   }
 
   loadIncidents() {
@@ -104,6 +160,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
+
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 300);
+
+    if (this.filters.lat && this.filters.lng) {
+      this.updateUserMarker(this.filters.lat, this.filters.lng);
+    }
+  }
+
+  private updateUserMarker(lat: number, lng: number): void {
+    if (!this.map) return;
+
+    if (this.userLocationMarker) {
+      this.map.removeLayer(this.userLocationMarker);
+      this.userLocationMarker = null;
+    }
+
+    const userIcon = L.divIcon({
+      html: '<div class="user-location-marker" title="Sua Localização"></div>',
+      className: 'custom-marker-wrapper',
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+
+    this.userLocationMarker = L.marker([lat, lng], { icon: userIcon })
+      .addTo(this.map)
+      .bindPopup('<b>Você está aqui</b>');
   }
 
   private addMarkers(): void {
@@ -113,11 +199,15 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.markers = [];
 
     this.incidents.forEach(incident => {
+      if (!incident.location || incident.location.latitude == null || incident.location.longitude == null) {
+        return;
+      }
+
       const color = incident.severity_level === 'HIGH' ? '#ef4444' : 
                     incident.severity_level === 'MEDIUM' ? '#f59e0b' : '#10b981';
       
       const markerHtml = `
-        <div class="pulse-marker" style="background-color: ${color};"></div>
+        <div class="pulse-marker" style="background-color: ${color};" title="${incident.category || 'Incidente'}"></div>
       `;
 
       const customIcon = L.divIcon({
@@ -134,7 +224,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
       .addTo(this.map);
 
       marker.on('click', () => {
-        this.selectedIncident = incident;
+        this.ngZone.run(() => {
+          this.selectedIncident = incident;
+          if (this.map) {
+            this.map.setView([incident.location.latitude, incident.location.longitude], 15, { animate: true });
+          }
+        });
       });
 
       this.markers.push(marker);
@@ -143,13 +238,17 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   focusOnIncident(incident: any) {
     this.selectedIncident = incident;
-    this.map.setView([incident.location.latitude, incident.location.longitude], 16);
+    if (this.map && incident?.location?.latitude != null && incident?.location?.longitude != null) {
+      this.map.setView([incident.location.latitude, incident.location.longitude], 16, { animate: true });
+    }
   }
 
   scrollFeed(amount: number) {
-    this.carouselContainer.nativeElement.scrollBy({
-      left: amount,
-      behavior: 'smooth'
-    });
+    if (this.carouselContainer?.nativeElement) {
+      this.carouselContainer.nativeElement.scrollBy({
+        left: amount,
+        behavior: 'smooth'
+      });
+    }
   }
 }

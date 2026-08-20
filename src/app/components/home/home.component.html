@@ -51,8 +51,9 @@
                     <option value="5000">5km</option>
                 </select>
             </div>
-            <button class="btn btn-outline w-full mt-4" (click)="getCurrentLocation()">
-                <span>📍 Localização</span>
+            <button class="btn btn-outline w-full mt-4" (click)="getCurrentLocation(true)" [disabled]="isLocating">
+                <span *ngIf="!isLocating">📍 Localização</span>
+                <span *ngIf="isLocating">⌛ Localizando...</span>
             </button>
         </div>
 
